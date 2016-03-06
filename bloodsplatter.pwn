@@ -8,20 +8,18 @@
 #define MAX_BLOOD 300
 
 new Iterator:Blood<MAX_BLOOD>,
-    bloodObject[MAX_BLOOD],
-    bloodAlpha[MAX_BLOOD],
-    bloodTimer[MAX_BLOOD];
+    bloodObject[MAX_BLOOD];
 
 stock Float:frandom(Float:max, Float:m2 = 0.0, dp = 3)
 {
-	new Float:mn = m2;
-	if(m2 > max) {
-		mn = max,
-		max = m2;
-	}
+    new Float:mn = m2;
+    if(m2 > max) {
+        mn = max,
+        max = m2;
+    }
     m2 = floatpower(10.0, dp);
     
-	return floatadd(floatdiv(float(random(floatround(floatmul(floatsub(max, mn), m2)))), m2), mn);
+    return floatadd(floatdiv(float(random(floatround(floatmul(floatsub(max, mn), m2)))), m2), mn);
 }
 
 public OnPlayerWeaponShot(playerid, weaponid, hittype, hitid, Float:fX, Float:fY, Float:fZ) {
@@ -55,14 +53,13 @@ public OnPlayerWeaponShot(playerid, weaponid, hittype, hitid, Float:fX, Float:fY
                     CA_RayCastLineAngle(fX, fY, fZ, vX, vY, vZ, fX, fY, fZ, vX, vY, vZ);
                     
                     bloodObject[index] = CreateDynamicObject(19836, fX + (pX * 0.05), fY + (pY * 0.05), fZ + (pZ * 0.05), vX, vY, vZ);
-                    bloodAlpha[index] = 0xFF;
                     
                     if(IsValidDynamicObject(bloodObject[index])) {
                         Iter_Add(Blood, index);
                         
-                        SetDynamicObjectMaterial(bloodObject[index], 0, -1, "none", "none", 0xFF0000 | (bloodAlpha[index] << 24));
+                        SetDynamicObjectMaterial(bloodObject[index], 0, -1, "none", "none", 0xFFFF0000);
                         
-                        bloodTimer[index] = SetTimerEx("FadeBlood", 50, true, "i", index);
+                        SetTimerEx("FadeBlood", 50, false, "ii", index, 255);
                     }
                 }
             }
@@ -70,23 +67,17 @@ public OnPlayerWeaponShot(playerid, weaponid, hittype, hitid, Float:fX, Float:fY
     }
 }
 
-forward FadeBlood(index);
-public FadeBlood(index)
+forward FadeBlood(index, alpha);
+public FadeBlood(index, alpha)
 {
-    bloodAlpha[index] -= 5;
+    alpha -= 5;
     
-    if(bloodAlpha[index]) {
-        SetDynamicObjectMaterial(bloodObject[index], 0, -1, "none", "none", 0xFF0000 | (bloodAlpha[index] << 24));
+    if(alpha) {
+        SetDynamicObjectMaterial(bloodObject[index], 0, -1, "none", "none", 0xFF0000 | (alpha << 24));
+        SetTimerEx("FadeBlood", 50, false, "ii", index, alpha);
     }
-	else {
+    else {
         DestroyDynamicObject(index);
-        KillTimer(bloodTimer[index]);
-        
         Iter_Remove(Blood, index);
     }
-}
-
-public OnFilterScriptInit() {
-    CA_Init();
-    return 1;
 }
