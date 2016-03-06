@@ -50,10 +50,14 @@ public OnPlayerWeaponShot(playerid, weaponid, hittype, hitid, Float:fX, Float:fY
                 vZ += fZ + frandom(-0.5, 0.5);
                 
                 if(CA_RayCastLineNormal(fX, fY, fZ, vX, vY, vZ, pX, pY, pZ, pX, pY, pZ)) {
+                    rDist = frandom(0.005, 0.020, 4);
+                    pX *= rDist;
+                    pY *= rDist;
+                    pZ *= rDist;
+                    
                     CA_RayCastLineAngle(fX, fY, fZ, vX, vY, vZ, fX, fY, fZ, vX, vY, vZ);
                     
-                    bloodObject[index] = CreateDynamicObject(19836, fX + (pX * 0.05), fY + (pY * 0.05), fZ + (pZ * 0.05), vX, vY, vZ);
-                    
+                    bloodObject[index] = CreateDynamicObject(19836, fX + pX, fY + pY, fZ + pZ, vX, vY, vZ);
                     if(IsValidDynamicObject(bloodObject[index])) {
                         Iter_Add(Blood, index);
                         
