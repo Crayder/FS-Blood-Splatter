@@ -58,6 +58,8 @@ public OnPlayerWeaponShot(playerid, weaponid, hittype, hitid, Float:fX, Float:fY
             }
         }
     }
+
+    return 1;
 }
 
 forward FadeBlood(objectid, alpha);
